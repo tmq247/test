@@ -634,6 +634,7 @@ async def mute_globally(_, message):
     user_id, reason = await extract_user_and_reason(message)
     user = await app.get_users(user_id)
     from_user = message.from_user
+    is_fmuted = await is_fmuted_user(user.id)
 
     if not user_id:
         return await message.reply_text("Tôi không thể tìm thấy người dùng đó.")
@@ -643,6 +644,9 @@ async def mute_globally(_, message):
 
     if user_id in [from_user.id, BOT_ID] or user_id in SUDOERS:
         return await message.reply_text("Tôi không thể tắt tiếng người dùng đó.")
+
+    #if  is_fmuted:
+        #await message.reply_text("Người này đã được xác nhận.")
         
     served_chats = await get_served_chats()
     m = await message.reply_text(
@@ -664,7 +668,7 @@ async def mute_globally(_, message):
         await app.send_message(
             user.id,
             f"Xin chào, Bạn đã bị cấm chat toàn hệ thống bởi {from_user.mention},"
-            f" Bạn hãy nhắn tin cho admin {reason or '@nguhanh69'} để mở chat.",
+            f" Bạn hãy nhắn tin cho admin {reason or from_user.mention} để mở chat.",
         )
     except Exception:
         pass
@@ -684,7 +688,7 @@ __**Người dùng bị cấm chat toàn hệ thống**__
             disable_web_page_preview=True,
         )
         await m.edit(
-            f"Đã cấm chat {user.mention} trên toàn hệ thống!!!\n IB cho {reason or from_user.mention} để mở chat",
+            f"""**Đã cấm chat {user.mention} trên toàn hệ thống!!!\n Gửi voice cho {reason or from_user.mention} để được mỡ chat  💬💬💬**""",
             disable_web_page_preview=True,
         )
     except Exception:
